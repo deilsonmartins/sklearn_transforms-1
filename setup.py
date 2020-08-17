@@ -17,6 +17,6 @@ setup(
     ],
     zip_safe=False,
     install_requires=[
-        'ibmlearn',
+        'imbalanced-learn==0.4.3',
     ],
 )
