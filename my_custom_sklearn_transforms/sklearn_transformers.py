@@ -1,8 +1,7 @@
-import pandas as pd
-from imblearn.over_sampling import SMOTE
 from sklearn.base import BaseEstimator, TransformerMixin
+from imblearn.over_sampling import SMOTE
 
-
+# All sklearn Transforms must have the `transform` and `fit` methods
 class DropColumns(BaseEstimator, TransformerMixin):
     def __init__(self, columns):
         self.columns = columns
@@ -13,13 +12,13 @@ class DropColumns(BaseEstimator, TransformerMixin):
     def transform(self, X):
         # Primeiro realizamos a cópia do dataframe 'X' de entrada
         data = X.copy()
+        
         # Retornamos um novo dataframe sem as colunas indesejadas
-        return data.drop(labels=self.columns, axis='columns')
+        new_x = data.drop(labels=self.columns, axis='columns')
+        
+        return new_x
 
-
-class SetIndex(BaseEstimator, TransformerMixin):
-    def __init__(self, columns):
-        self.columns = columns
+class ADDColumns(BaseEstimator, TransformerMixin):
 
     def fit(self, X, y=None):
         return self
@@ -27,15 +26,24 @@ class SetIndex(BaseEstimator, TransformerMixin):
     def transform(self, X):
         # Primeiro realizamos a cópia do dataframe 'X' de entrada
         data = X.copy()
-        # Retornamos um novo dataframe sem as colunas indesejadas
-        return data.set_index(self.columns, inplace=True)
+
+        # Criação da nova coluna
+        data['H_AULA_PRES/FALTAS'] = round(data['H_AULA_PRES'] / data['FALTAS'], 3)
+        
+        # Retornamos um novo dataframe 
+        return data
+ 
 
 
-class SmoteResample(object):
+class Balancing(object):
     def __init__(self):
         pass
 
     def fit(self, X, y):
-        X_resampled, y_resampled = SMOTE(random_state=42).fit_resample(X, y)
-        X_resampled = pd.DataFrame(X_resampled, columns=X.columns)
-        return X_resampled, y_resampled
+        
+        #Instanciando SMOTE
+        balancing = SMOTE()
+        
+        new_x, new_y = balancing.fit_resample(X, y)
+        
+        return new_x, new_y
